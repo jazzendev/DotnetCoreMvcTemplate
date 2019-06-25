@@ -1,0 +1,149 @@
+﻿@using MyTemplate.Web.Portal.Models
+@using MyTemplate.Web.Core.Models
+@using MyTemplate.Domain.Portal.DomainModel
+@model PortalLoginViewModel
+@{
+    var result = ViewBag.Result as ResultViewModel;
+
+    var roles = ViewBag.Roles as IEnumerable<PortalRoleDto>;
+
+    var userRoles = Model.RoleList ?? new List<string>();
+
+    ViewBag.Title = "成员信息管理";
+}
+
+@if (result != null)
+{
+    if (result.IsSuccess)
+    {
+        <div class="alert alert-success alert-dismissible" role="alert">提交成功。</div>
+    }
+    else
+    {
+        <div class="alert alert-danger alert-dismissible" role="alert">出现错误，请核对后重试。</div>
+    }
+}
+<form asp-controller="Login" asp-action="Upsert" id="adminForm" method="post" class="form login-form validate-me" role="form">
+    <input name="IsPasswordChanged" id="IsPasswordChanged" type="hidden" value="False" />
+    <div class="form-row">
+        <div class="form-group col-sm-6">
+            <label for="Id">ID (系统生成)</label>
+            <input id="Id" name="Id" class="form-control" value="@Model.Id" readonly />
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-sm-6">
+            <label for="Username">新成员</label>
+            <div class="input-group">
+                <input asp-for="Username" name="Username" id="Username" class="form-control" placeholder="请输入用户名" />
+                @*<div class="input-group-append">
+                    <div class="input-group-text">@@jingteng</div>
+                </div>*@
+            </div>
+            <span asp-validation-for="Username"></span>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-sm-6">
+            <label for="Password">成员密码</label>
+            <div class="input-group">
+                @if (string.IsNullOrEmpty(Model.Id))
+                {
+                    <input asp-for="Password" name="Password" id="Password" class="form-control" type="password" placeholder="" readonly="readonly" />
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-outline-info" id="setPassword">获取初始密码</button>
+                    </div>
+                }
+                else
+                {
+                    <input name="Password" id="Password" class="form-control" type="password" placeholder="" readonly="readonly" value="******" />
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-outline-info" id="resetPassword">重置密码</button>
+                    </div>
+                }
+            </div>
+            <span asp-validation-for="Password"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="RoleList">权限设置</label>
+        <br />
+        @foreach (var r in roles)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="RoleList" id="@r.Id" value="@r.Id" @(userRoles.Contains(r.Name) ? "checked" : "" ) />
+                <label class="form-check-label" for="@r.Id">
+                    @r.Name
+                </label>
+            </div>
+        }
+        <span asp-validation-for="RoleList"></span>
+    </div>
+
+    <div asp-validation-summary="ModelOnly"></div>
+    <div class="col-sm-6">
+        <button type="submit" id="confirm" class="btn btn-primary">提交</button>
+        <a asp-controller="login" asp-action="index" class="btn btn-default">返回</a>
+    </div>
+</form>
+<div class="modal fade" tabindex="-1" id="createModel" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">成员账号确认</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>
+                    <strong>将保存成员账号</strong>
+                </p>
+                <p>
+                    成员用户名
+                </p>
+                <p class="text-success"><strong id="accountName"></strong></p>
+                <p>
+                    成员密码
+                </p>
+                <p class="text-danger"><strong id="accountPwd"></strong></p>
+                <p class="text-warning">设置初始密码或重置后密码后，请通知对方及时修改密码。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="submit" class="btn btn-primary" id="submit">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+@section scripts{
+    <script>$(function() {
+            $("#confirm").on('click', function() {
+                if ($("#adminForm").valid()) {
+                    $("#accountName").text($("#Username").val());
+                    $("#accountPwd").text($("#Password").val());
+                    $("#createModel").modal('show');
+                }
+                return false;
+            });
+
+            $("#submit").on('click', function() {
+                $("#adminForm").submit();
+            });
+
+            $("#setPassword").on('click', function() {
+                resetPassword();
+            });
+
+            $("#resetPassword").on('click', function() {
+                if (confirm("确定要重置密码吗？")) {
+                    resetPassword();
+                }
+            });
+
+            function resetPassword() {
+                //var newPassword = Math.random().toString(36).slice(2);
+                var newPassword = parseInt(Math.random() * (10 ** 16)).toString(36);
+                $("#Password").val(newPassword).removeClass("hidden");
+                $("#IsPasswordChanged").val("True");
+            }
+});</script>
+}

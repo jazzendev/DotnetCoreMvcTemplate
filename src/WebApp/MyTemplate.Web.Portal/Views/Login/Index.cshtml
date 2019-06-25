@@ -1,0 +1,43 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using MyTemplate.Core.Repository
+@using MyTemplate.Domain.Portal.DomainModel
+@model PaginationResult<PortalLoginDto>
+@{
+    ViewBag.Title = "成员管理";
+}
+
+
+<div class="card">
+    <div class="card-header">
+        查询成员
+    </div>
+    <div class="card-body">
+        <form id="searchForm" class="form-inline"
+              asp-controller="Login"
+              asp-action="GetMorePortalLogins"
+              data-ajax-method="GET"
+              data-ajax-mode="Replace"
+              data-ajax-update="#loginList"
+              data-ajax-begin="app.blockUI"
+              data-ajax-complete="app.unblockUI"
+              data-ajax="true">
+            <div class="form-group">
+                <label for="Username" class="mr-1">成员用户名</label>
+                <input type="text" class="form-control mr-2" name="Username" id="Username" placeholder="成员用户名" />
+            </div>
+            <button type="submit" class="btn btn-primary sm-4">搜索</button>
+        </form>
+    </div>
+</div>
+<br />
+<a asp-controller="login" asp-action="Upsert" class="btn btn-success"> + 添加成员</a>
+<br />
+<br />
+<div id="loginList">
+    @await Html.PartialAsync("_portalLoginList", Model)
+</div>
+
+@section scripts{
+}

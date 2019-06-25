@@ -1,0 +1,90 @@
+﻿@{
+    var sitemap = Sitemap.GetSitemap();
+    var controller = ViewContext.RouteData.Values["Controller"].ToString().ToLower();
+    var action = ViewContext.RouteData.Values["Action"].ToString().ToLower();
+}
+@if (User.Identity.IsAuthenticated)
+{
+    var roleString = User.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).FirstOrDefault()?.Value;
+    IEnumerable<string> roles = string.IsNullOrEmpty(roleString) ? null : roleString.Split(',');
+
+    <div class="main-menu">
+        <a asp-controller="@sitemap.Controller" asp-action="@sitemap.Action" class="@(controller==sitemap.Controller && action==sitemap.Action ?"active":"")"><i class="@sitemap.IconClass"></i>@sitemap.Title</a>
+        @foreach (var node in sitemap.Children)
+        {
+            if (!node.IsShow)
+            {
+                continue;
+            }
+            if (node.VisibleRoles != null)
+            {
+                var skipNode = false;
+
+                foreach (var r in node.VisibleRoles)
+                {
+                    skipNode = roles == null || !roles.Contains(r.ToString());
+                    if (skipNode)
+                    {
+                        break;
+                    }
+                }
+
+                if (skipNode)
+                {
+                    continue;
+                }
+            }
+
+            var cls = "";
+            if (node.Children.Count() > 0)
+            {
+                cls += "menu-group-title";
+            }
+            if (node.Action == action && node.Controller == controller)
+            {
+                cls += " active";
+            }
+
+            if (node.IsLink)
+            {
+                <a asp-controller="@node.Controller" asp-action="@node.Action" class="@cls">
+                    <i class="@node.IconClass"></i>@node.Title
+                    @if (node.Children.Where(c => c.IsShow).Count() > 0)
+                    {
+                        <i class="fa fa-chevron-down menu-collapse"></i>
+                    }
+                </a>
+            }
+            else
+            {
+                <a class="@cls">
+                    <i class="@node.IconClass"></i>@node.Title
+                    @if (node.Children.Where(c => c.IsShow).Count() > 0)
+                    {
+                        <i class="fa fa-chevron-down menu-collapse"></i>
+                    }
+                </a>
+            }
+
+            if (node.Children.Count() > 0)
+            {
+                <div class="menu-group">
+                    @foreach (var n in node.Children)
+                    {
+                        if (!n.IsShow)
+                        {
+                            continue;
+                        }
+
+                        var isCurrent = (n.Action == action) && (n.Controller == controller);
+                        <a asp-controller="@n.Controller" asp-action="@n.Action" class="@(isCurrent? "active":"")">
+                            @n.Title
+                        </a>
+                    }
+                </div>
+            }
+        }
+    </div>
+}
+
+

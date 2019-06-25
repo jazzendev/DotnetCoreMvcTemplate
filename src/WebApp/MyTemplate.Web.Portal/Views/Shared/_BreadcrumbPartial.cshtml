@@ -1,0 +1,115 @@
+﻿@{
+    var sitemap = Sitemap.GetSitemap();
+    var controller = ViewContext.RouteData.Values["Controller"].ToString().ToLower();
+    var action = ViewContext.RouteData.Values["Action"].ToString().ToLower();
+    var idQuery = Context.Request.Query.FirstOrDefault(q => q.Key.ToLower().Contains("id")).Value.ToString();
+    var pageId = $"{controller}/{action}";
+}
+@if (User.Identity.IsAuthenticated)
+{
+    <b>@ViewBag.Title</b>
+    <div class="breadcrumb-container">
+        @if (sitemap.Id == pageId)
+        {
+            <span class="active">@sitemap.Title</span>
+        }
+        else
+        {
+            <a asp-controller="@sitemap.Controller" asp-action="@sitemap.Action">@sitemap.Title</a>
+            <span>/</span>
+
+            var found = false;
+            var nextNodeTitle = "";
+            foreach (var node in sitemap.Children)
+            {
+                if (node.Id == pageId)
+                {
+                    <span class="active">@node.Title</span>
+                    break;
+                }
+                else
+                {
+                    foreach (var n in node.Children)
+                    {
+                        if (n.Id == pageId)
+                        {
+                            found = true;
+                            nextNodeTitle = n.Title;
+
+                            <a asp-controller="@node.Controller" asp-action="@node.Action">@node.Title</a>
+                            <span>/</span>
+                            <span class="active">@nextNodeTitle</span>
+                            break;
+                        }
+                        else
+                        {
+                            foreach (var n1 in n.Children)
+                            {
+                                if (n1.Id == pageId)
+                                {
+                                    found = true;
+                                    nextNodeTitle = n1.Title;
+
+                                    <a asp-controller="@node.Controller" asp-action="@node.Action">@node.Title</a>
+                                    <span>/</span>
+                                    <a asp-controller="@n.Controller" asp-action="@n.Action">@n.Title</a>
+                                    <span>/</span>
+                                    <span class="active">@nextNodeTitle</span>
+                                    break;
+                                }
+                                else
+                                {
+                                    foreach (var n2 in n1.Children)
+                                    {
+                                        if (n2.Id == pageId)
+                                        {
+                                            found = true;
+                                            nextNodeTitle = n2.Title;
+
+                                            <a asp-controller="@node.Controller" asp-action="@node.Action">@node.Title</a>
+                                            <span>/</span>
+                                            <a asp-controller="@n.Controller" asp-action="@n.Action">@n.Title</a>
+                                            <span>/</span>
+                                            if (string.IsNullOrEmpty(idQuery))
+                                            {
+                                                <a asp-controller="@n1.Controller" asp-action="@n1.Action">@n1.Title</a>
+                                                <span>/</span>
+                                            }
+                                            else
+                                            {
+                                                <a asp-controller="@n1.Controller" asp-action="@n1.Action" asp-route-id="@idQuery">@n1.Title (@idQuery)</a>
+                                                <span>/</span>
+                                            }
+                                            <span class="active">@ViewBag.Title</span>
+
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (found)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                        if (found)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (found)
+                    {
+                        break;
+                    }
+                }
+                if (found)
+                {
+                    break;
+                }
+            }
+        }
+    </div>
+}
+
+

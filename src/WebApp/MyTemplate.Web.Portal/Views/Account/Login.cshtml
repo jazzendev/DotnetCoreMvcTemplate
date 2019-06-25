@@ -1,0 +1,46 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using MyTemplate.Web.Core.Models
+@model LoginViewModel
+@{
+    var result = ViewBag.LoginResult as JsonResponse;
+    ViewBag.Title = "管理员登录";
+}
+
+@section styles{
+    <style>
+        .card {
+            margin: 100px auto;
+            max-width: 600px;
+            border: none;
+        }
+    </style>
+}
+
+<div class="card">
+    <form asp-controller="Account" asp-action="Login" method="post" class="card-body form login-form validate-me" role="form">
+        <div class="text-center">
+            <h2>@ViewBag.Title</h2>
+        </div>
+        <br />
+        <div class="form-group">
+            <label for="Username">用户名</label>
+            <input asp-for="Username" name="Username" id="Username" class="form-control" placeholder = "请输入用户名" />
+            <span asp-validation-for="Username"></span>
+        </div>
+        <div class="form-group">
+            <label for="Password">密码</label>
+            <input asp-for="Password" name="Password" id="Password" class="form-control" type="password" placeholder = "请输入密码" />
+            <span asp-validation-for="Password"></span>
+        </div>
+        <div asp-validation-summary="ModelOnly"></div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary btn-wide">登录</button>
+        </div>
+    </form>
+</div>
+
+@section scripts
+{
+}

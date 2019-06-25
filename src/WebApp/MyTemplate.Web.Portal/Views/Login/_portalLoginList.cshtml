@@ -1,0 +1,52 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using MyTemplate.Web.Core.ViewComponents
+@using MyTemplate.Core.Repository
+@using MyTemplate.Core.Utility
+@using MyTemplate.Domain.Portal.DomainModel
+@model PaginationResult<PortalLoginDto>
+@{
+}
+
+<div class="table-responsive">
+    <table class="table">
+        <tr>
+            <th>Id</th>
+            <th>用户名</th>
+            <th>创建时间</th>
+            <th>权限</th>
+            <th>状态</th>
+            <th class="text-center">操作</th>
+        </tr>
+
+        @foreach (var m in Model.Data)
+        {
+            <tr class="@(m.IsValid ? "" : "invalid")">
+                <td>@m.Id</td>
+                <td>@m.Username</td>
+                <td>@m.CreationTime.ChineseLocalTime(TimeFormat.Long)</td>
+                <td>@m.Roles</td>
+                <td>@(m.IsValid ? "启用" : "禁用")</td>
+                <td class="text-center text-nowrap">
+                    <a asp-controller="login" asp-action="upsert" asp-route-id="@m.Id">编辑</a>
+                    <!--   @Html.ActionLink("查看", "detail", new { id = m.Id }, new { @class = "btn btn-primary", role = "button" })
+                       @Html.ActionLink("编辑", "edit", new { id = m.Id }, new { @class = "btn btn-primary", role = "button" })-->
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+@(await Component.InvokeAsync(
+        nameof(Pagination),
+        new PaginationOptions()
+        {
+            Controller = "Login",
+            Action = "GetMorePortalLogins",
+            Method = AjaxMethod.GET,
+            UpdateMode = AjaxUpdateMode.Replace,
+            UpdateTarget = "#loginList",
+            PaginationResult = Model
+        })
+)

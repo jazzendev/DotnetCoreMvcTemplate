@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\MyTemplate.Core\MyTemplate.Core.csproj" />
+    <ProjectReference Include="..\..\Common\MyTemplate.Domain.Portal\MyTemplate.Domain.Portal.csproj" />
+  </ItemGroup>
+
+</Project>

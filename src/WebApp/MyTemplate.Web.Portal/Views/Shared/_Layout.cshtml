@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MyTemplate</title>
+
+    <link rel="stylesheet" href="~/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/fa/css/all.min.css" />
+    <environment include="Development">
+        <link rel="stylesheet" href="~/css/site.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    </environment>
+
+    @RenderSection("styles", required: false)
+</head>
+<body>
+    <div class="main-layout">
+        <div class="banner">
+            <a asp-controller="home" asp-action="index" class="wide-logo text-center text-light">
+                MyTemplate
+            </a>
+            <div class="wide-toolbar bg-white text-dark">
+                <div class="header"></div>
+                <div class="buttons">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <span class="button-info">您好, @User.Identity.Name!</span>
+                        <a class="button-item" asp-controller="Account" asp-action="Logout">
+                            <i class="fa fa-sign-out-alt"></i>登出
+                        </a>
+                    }
+                </div>
+                <!-- <div class="header">
+                     <span class="">@ViewData["Title"]</span>
+                     @*<div class="input-group" style="padding-top:15px;">
+                             <input type="text" class="form-control" placeholder="Search for..." aria-label="Search for...">
+                             <span class="input-group-btn">
+                                 <button class="btn btn-primary" type="button">Search</button>
+                             </span>
+                         </div>*@
+                 <div class="buttons">
+                     <span>您好！</span>
+                     <a class="btn btn-sm btn-warning text-light">
+                         有新消息 <span class="badge badge-light">4</span>
+                     </a>
+                     <a class="btn btn-sm btn-danger text-light">
+                         登出
+                     </a>
+                 </div>-->
+            </div>
+            <div class="collapse-banner">
+                <nav class="navbar text-light" style="width:100%;padding:0;z-index:100;">
+                    <a class="navbar-brand text-light" style="padding-left:10px;font-weight:bolder;" asp-controller="home" asp-action="index">MyTemplate</a>
+                    <button class="navbar-toggler text-light" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" width="30" height="30" focusable="false"><title>Menu</title><path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" d="M4 7h22M4 15h22M4 23h22"></path></svg>
+                    </button>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <div class="collapse navbar-collapse" id="navbarText" style="background: #2E94ED">
+                            <ul class="navbar-nav mr-auto" style="padding: 0 20px;">
+                                <li class="nav-item active">
+                                    <a class="nav-link text-light" asp-controller="home" asp-action="index">首页</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" asp-controller="login" asp-action="index">管理员</a>
+                                </li>
+                            </ul>
+
+                            @*<span class="navbar-text">
+                                    Navbar text with an inline element
+                                </span>*@
+                        </div>
+                    }
+                </nav>
+            </div>
+        </div>
+        <div class="content">
+            <div class="left-sticky">
+                <div class="wide-menu bg-dark-menu text-light">
+                    @await Html.PartialAsync("_MenuPartial")
+                </div>
+            </div>
+            <div class="main-content bg-light">
+                <div class="main-content-header">
+                    @await Html.PartialAsync("_BreadcrumbPartial")
+                </div>
+                <div class="main-content-body">
+                    @RenderBody()
+                </div>
+                <footer style="width:100%; text-align:center;">
+                    <hr />
+                    <span>2019 - JT &copy; MyTemplate</span>
+                </footer>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <partial name="_CookieConsentPartial" />
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <div id="loader" style="display:none;">
+        <img src="~/images/loading.gif" />
+    </div>
+
+    <script src="~/js/vendor.bundle.min.js"></script>
+    <script src="~/js/vendor.plugin.min.js"></script>
+
+    <environment include="Development">
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/js/pagination.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>
+
+    @RenderSection("scripts", required: false)
+    <script>
+        $(function () {
+            var path = window.location.pathname.toLowerCase();
+
+            $("a.menu-group-title").on("click", function () {
+                var i = $(this).children("i");
+                if (i.hasClass("fa-chevron-down")) {
+                    i.removeClass("fa-chevron-down").addClass("fa-chevron-up");
+                    $(this).next().slideDown("100");
+                }
+                else {
+                    i.removeClass("fa-chevron-up").addClass("fa-chevron-down");
+                    $(this).next().slideUp("100");
+                }
+            });
+
+            $("div.menu-group > a.active").parent().slideDown("100").prev().children("i.fa-chevron-down").removeClass("fa-chevron-down").addClass("fa-chevron-up");
+
+            resize();
+        });
+
+        $(function () {
+            resize();
+        })
+        $(window).resize(function () {
+            resize();
+        });
+
+        function resize() {
+            var height = $(document).height();
+            $(".content").css({ "min-height": height });
+        }
+    </script>
+
+</body>
+</html>

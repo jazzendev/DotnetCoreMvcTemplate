@@ -1,0 +1,118 @@
+﻿@using MyTemplate.Core.Repository
+@using Newtonsoft.Json
+@model IPaginationResult
+@{
+    double totalCount = Model.Total == 0 ? 1 : Model.Total;
+    double pageSize = Model.Size == 0 ? 1 : Model.Size;
+    var pageCount = (int)Math.Ceiling(totalCount / pageSize);
+    var pageNumber = Model.Page + 1;
+    pageNumber = pageNumber < 1 ? 1 : (pageNumber > pageCount ? pageCount : pageNumber);
+    var data = JsonConvert.SerializeObject(Model.Query);
+}
+
+<div>
+    <input type="hidden" class="pagination-data" value="@data" />
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+
+            @if (pageNumber == 1)
+            {
+                <li class="page-item disabled">
+                    <a href="#" aria-label="Previous" class="page-link">
+                        <span aria-hidden="true">&laquo; 上一页</span>
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a aria-label="Previous" class="page-link" data-page="@(pageNumber-2)">
+                        <span aria-hidden="true">&laquo; 上一页</span>
+                    </a>
+                </li>
+            }
+            @if (pageNumber < 5)
+            {
+                for (var i = 1; i <= 5; i++)
+                {
+                    if (i > pageCount)
+                    {
+                        break;
+                    }
+                    if (i == pageNumber)
+                    {
+                        <li class="page-item active">
+                            <span class="page-link">@i <span class="sr-only">(current)</span></span>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item"><a class="page-link" data-page="@(i-1)">@i</a></li>
+                    }
+                }
+                if (pageCount > 5)
+                {
+                    if (pageNumber == 4)
+                    {
+                        <li class="page-item"><a class="page-link" data-page="5">6</a></li>
+                    }
+                    <li class="page-item">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+            }
+            @if (pageNumber >= 5)
+            {
+                <li class="page-item"><a class="page-link" data-page="0">1</a></li>
+                <li class="page-item"><a class="page-link" data-page="1">2</a></li>
+                if (pageNumber > 5)
+                {
+                    <li class="page-item">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+                for (var i = pageNumber - 2; i <= pageNumber + 2; i++)
+                {
+                    if (i > pageCount)
+                    {
+                        break;
+                    }
+                    if (i == pageNumber)
+                    {
+                        <li class="page-item active">
+                            <span class="page-link">@i <span class="sr-only">(current)</span></span>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item"><a class="page-link" data-page="@(i-1)">@i</a></li>
+                    }
+                }
+
+                if (pageCount - pageNumber > 2)
+                {
+                    <li class="page-item">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+            }
+            @if (pageNumber == pageCount)
+            {
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">下一页 &raquo;</span>
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a class="page-link" aria-label="Next" data-page="@(pageNumber)">
+                        <span aria-hidden="true">下一页 &raquo;</span>
+                    </a>
+                </li>
+            }
+        </ul>
+        <div class="">共 @pageCount 页，@totalCount 条记录。</div>
+    </nav>
+</div>
